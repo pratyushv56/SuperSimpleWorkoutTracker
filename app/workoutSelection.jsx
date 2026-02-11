@@ -1,4 +1,5 @@
-import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   FlatList,
@@ -8,14 +9,11 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Spacer from "../components/Spacer";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-const Week = () => {
-  const [workouts, setWorkouts] = useState([]);
-  const [enteredName, setEnteredName] = useState("");
+const workoutSelection = () => {
+  const { sessionName } = useLocalSearchParams();
 
   const [showPopUp, setShowPopUp] = useState(false);
 
@@ -27,56 +25,71 @@ const Week = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchSessions = async () => {
-      const fetchedArray = await AsyncStorage.getItem("sessions");
-      console.log(fetchedArray);
+  const [enteredName, setenteredName] = useState("");
 
-      if (fetchedArray) {
-        setWorkouts(JSON.parse(fetchedArray));
-      } else {
-        setWorkouts([]);
-      }
-    };
-    fetchSessions();
-  }, []);
-
-  const setWorkoutsStorage = async (modifiedSessionsArray) => {
+  const setWorkouts = async (modifiedWorkoutArray, sesname) => {
     await AsyncStorage.setItem(
-      "sessions",
-      JSON.stringify(modifiedSessionsArray),
+      `workout-${sesname}`,
+      JSON.stringify(modifiedWorkoutArray),
     );
   };
 
-  const router = useRouter();
+  const samplePush = ["Bench Press", "Over Head Press"];
+  useEffect(() => {
+    const randomInit = async (array) => {
+      await setWorkouts(array, "Push");
+    };
+    randomInit(samplePush);
+  }, []);
 
-  const addName = () => {
-    const updatedArray = [...workouts, enteredName];
-    setWorkouts(updatedArray);
-    setWorkoutsStorage(updatedArray);
+  const getWorkouts = async (sesname) => {
+    const workoutsArray = await AsyncStorage.getItem(`workout-${sesname}`);
 
-    flipPopUpFlag();
+    if (workoutsArray) {
+      return JSON.parse(workoutsArray);
+    } else {
+      return [];
+    }
   };
 
-  const chooseWorkout = (sessionName) => {
+  const [sessionWorkouts, setSessionWorkouts] = useState([]);
+
+  useEffect(() => {
+    const loadWorkouts = async () => {
+      const array = await getWorkouts(sessionName);
+      setSessionWorkouts(array);
+    };
+    loadWorkouts();
+  }, [sessionName]);
+
+  const router = useRouter();
+
+  const chooseWorkout = (workoutName) => {
     router.push({
-      pathname: "/workoutSelection",
-      params: { sessionName },
+      pathname: "/workoutScreen",
+      params: { workoutName },
     });
+  };
+
+  const addName = () => {
+    const updatedArray = [...sessionWorkouts, enteredName];
+
+    setSessionWorkouts(updatedArray);
+    setWorkouts(updatedArray, sessionName);
+    flipPopUpFlag();
   };
 
   return (
     <SafeAreaView style={styles.page}>
-      <Text style={{ color: "white", fontSize: 20 }}>Choose a Session</Text>
-      <Spacer h={10} />
+      <Text style={{ color: "white", fontSize: 20 }}>Choose a workout</Text>
+      <Spacer h={20} />
       <FlatList
         style={{ width: "70%" }}
-        data={workouts}
+        data={sessionWorkouts}
         contentContainerStyle={{}}
         renderItem={({ item }) => (
           <Pressable
             style={{
-              flex: 1,
               alignItems: "center",
               padding: 10,
               marginVertical: 5,
@@ -93,10 +106,10 @@ const Week = () => {
       />
       <Spacer h={20} />
       <Pressable
-        onPress={flipPopUpFlag}
         style={{ borderRadius: 10, padding: 4, backgroundColor: "green" }}
+        onPress={flipPopUpFlag}
       >
-        <Text style={{ fontSize: 20, color: "white" }}>Add Session</Text>
+        <Text style={{ fontSize: 20, color: "white" }}>Add Workout</Text>
       </Pressable>
       <Spacer h={20} />
 
@@ -115,10 +128,10 @@ const Week = () => {
         >
           <View>
             <TextInput
-              style={{ borderRadius: 5, backgroundColor: "gray" }}
+              style={{ backgroundColor: "black" }}
               placeholder="Name"
               value={enteredName}
-              onChangeText={setEnteredName}
+              onChangeText={setenteredName}
             ></TextInput>
             <Pressable onPress={addName}>
               <Text style={{ color: "white" }}>Add</Text>
@@ -162,4 +175,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-export default Week;
+export default workoutSelection;
