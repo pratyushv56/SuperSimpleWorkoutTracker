@@ -40,7 +40,7 @@ const workoutScreen = () => {
   };
 
   const deleteSet = async (indexToDelete) => {
-    const stored = AsyncStorage.getItem("workoutLogsMaster");
+    const stored = await AsyncStorage.getItem("workoutLogsMaster");
     const parsed = stored ? JSON.parse(stored) : {};
 
     const updatedSets =
