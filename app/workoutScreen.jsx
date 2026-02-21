@@ -1,30 +1,78 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Spacer from "../components/Spacer";
 import { commonStyles } from "../styles/commonStyles";
 
 const workoutScreen = () => {
+  const today = new Date().toISOString().split("T")[0];
   const { workoutName } = useLocalSearchParams();
 
   const [Log, setLog] = useState([]);
 
-  const [enteredWeight, setenteredWeight] = useState(0);
-  const [enteredReps, setenteredReps] = useState(0);
+  const [enteredWeight, setenteredWeight] = useState("");
+  const [enteredReps, setenteredReps] = useState("");
 
-  const logSet = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const logSet = async () => {
+    const storedSet = await AsyncStorage.getItem("workoutLogsMaster");
+    const storedSetParsed = storedSet ? JSON.parse(storedSet) : {};
+    storedSetParsed[workoutName] = storedSetParsed[workoutName]
+      ? storedSetParsed[workoutName]
+      : {};
+    storedSetParsed[workoutName][today] =
+      storedSetParsed[workoutName][today] || []; //does the same thing as the ternary operator above
+
+    storedSetParsed[workoutName][today].push([enteredWeight, enteredReps]);
+
+    await AsyncStorage.setItem(
+      "workoutLogsMaster",
+      JSON.stringify(storedSetParsed),
+    );
     setLog((oldlog) => [...oldlog, [enteredWeight, enteredReps]]);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setenteredWeight("");
+    setenteredReps("");
   };
 
-  const deleteSet = (indexToDelete) => {
+  const deleteSet = async (indexToDelete) => {
+    const stored = AsyncStorage.getItem("workoutLogsMaster");
+    const parsed = stored ? JSON.parse(stored) : {};
+
+    const updatedSets =
+      parsed[workoutName]?.[today]?.filter(
+        (_, index) => index !== indexToDelete,
+      ) || [];
+
+    if (parsed[workoutName]) {
+      parsed[workoutName][today] = updatedSets;
+    }
+
+    await AsyncStorage.setItem("workoutLogsMaster", JSON.stringify(parsed));
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
     setLog((prev) => prev.filter((_, index) => index !== indexToDelete));
   };
+
+  useEffect(() => {
+    const loadTodaySets = async () => {
+      const today = new Date().toISOString().split("T")[0];
+
+      const stored = await AsyncStorage.getItem("workoutLogsMaster");
+      const exerciseLogs = stored ? JSON.parse(stored) : {};
+
+      const todaySets = exerciseLogs[workoutName]?.[today] || [];
+
+      setLog(todaySets);
+    };
+
+    loadTodaySets();
+  }, [workoutName]);
 
   return (
     <SafeAreaView
