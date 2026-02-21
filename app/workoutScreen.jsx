@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
@@ -10,7 +11,7 @@ import { commonStyles } from "../styles/commonStyles";
 const workoutScreen = () => {
   const { workoutName } = useLocalSearchParams();
 
-  const [Log, setLog] = useState([["Weight", "Reps"]]);
+  const [Log, setLog] = useState([]);
 
   const [enteredWeight, setenteredWeight] = useState(0);
   const [enteredReps, setenteredReps] = useState(0);
@@ -18,6 +19,11 @@ const workoutScreen = () => {
   const logSet = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setLog((oldlog) => [...oldlog, [enteredWeight, enteredReps]]);
+  };
+
+  const deleteSet = (indexToDelete) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setLog((prev) => prev.filter((_, index) => index !== indexToDelete));
   };
 
   return (
@@ -78,11 +84,30 @@ const workoutScreen = () => {
       <Text>Log</Text>
       <Spacer h={15} />
       <View
-        style={{ backgroundColor: "green", width: "80%", borderRadius: 20 }}
+        style={{
+          flex: 1,
+          backgroundColor: "#0d5717",
+          width: "80%",
+          borderRadius: 20,
+        }}
       >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingInline: 30,
+            paddingVertical: 5,
+          }}
+        >
+          <Text style={{ color: "white" }}>Weight</Text>
+          <Text style={{ color: "white" }}>Reps</Text>
+          <Ionicons name="barbell-outline" size={20} />
+        </View>
+
         <FlatList
           data={Log}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <View
               style={{
                 flexDirection: "row",
@@ -90,10 +115,19 @@ const workoutScreen = () => {
                 alignItems: "center",
                 paddingInline: 30,
                 paddingVertical: 5,
+                backgroundColor: "green",
               }}
             >
-              <Text style={{ color: "white" }}>{item[0]}</Text>
-              <Text style={{ color: "white" }}>{item[1]}</Text>
+              <Text style={{ color: "white" }}> {item[0]}</Text>
+              <Text style={{ color: "white", paddingLeft: 4 }}> {item[1]}</Text>
+              <Pressable
+                onPress={() => {
+                  deleteSet(index);
+                }}
+                style={{ color: "red", alignSelf: "flex-end" }}
+              >
+                <Ionicons name="trash-outline" size={20} color="red" />
+              </Pressable>
             </View>
           )}
         />
