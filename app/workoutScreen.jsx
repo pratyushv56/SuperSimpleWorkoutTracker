@@ -2,12 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams } from "expo-router";
-import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Spacer from "../components/Spacer";
 import { commonStyles } from "../styles/commonStyles";
+
 
 const workoutScreen = () => {
   const today = new Date().toISOString().split("T")[0];
@@ -87,7 +87,6 @@ const workoutScreen = () => {
           justifyContent: "space-between",
         }}
       >
-        <LottieView></LottieView>
         <TextInput
           placeholder="Weight"
           value={enteredWeight}

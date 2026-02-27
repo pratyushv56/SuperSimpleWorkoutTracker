@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
+import WorkoutContext from "./WorkoutProvider";
 
 export default function RootLayout() {
   useEffect(() => {
@@ -65,13 +66,16 @@ export default function RootLayout() {
 
     initialize();
   }, []);
+
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: "#1a021d" },
-        animation: "ios_from_right",
-      }}
-    />
+    <WorkoutContext>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "#1a021d" },
+          animation: "ios_from_right",
+        }}
+      />
+    </WorkoutContext>
   );
 }
