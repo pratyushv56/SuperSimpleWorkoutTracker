@@ -3,7 +3,20 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import WorkoutContext from "./WorkoutProvider";
 
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+} from "@expo-google-fonts/inter";
+import { useFonts } from "expo-font";
+
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+  });
+
   useEffect(() => {
     const initialize = async () => {
       const initFlag = await AsyncStorage.getItem("appInitialized");
