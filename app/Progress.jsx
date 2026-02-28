@@ -1,12 +1,12 @@
 import Entypo from "@expo/vector-icons/Entypo";
 import { BlurView } from "expo-blur";
+import { useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Spacer from "../components/Spacer";
 import { WorkoutContext } from "./WorkoutProvider";
-
 function getWorkoutsOfDate(master, date) {
   let list = [];
   for (const w in master) {
@@ -18,6 +18,7 @@ function getWorkoutsOfDate(master, date) {
 }
 
 export default function Progress() {
+  const router = useRouter();
   const { storedWorkouts, reload } = useContext(WorkoutContext);
 
   useEffect(() => {
@@ -133,6 +134,25 @@ export default function Progress() {
 
             <Pressable onPress={changeDateNext}>
               <Entypo name="arrow-with-circle-right" size={30} color="white" />
+            </Pressable>
+          </View>
+          <Spacer h={40} />
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Pressable
+              onPress={() => {
+                router.push("/Graph");
+              }}
+            >
+              <Text style={{ color: "white" }}>GraphView</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                router.push("/prPage");
+              }}
+            >
+              <Text style={{ color: "white" }}>PR</Text>
             </Pressable>
           </View>
         </View>
