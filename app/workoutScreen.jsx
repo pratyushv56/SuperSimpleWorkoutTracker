@@ -8,7 +8,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Spacer from "../components/Spacer";
 import { commonStyles } from "../styles/commonStyles";
 
-
 const workoutScreen = () => {
   const today = new Date().toISOString().split("T")[0];
   const { workoutName } = useLocalSearchParams();
@@ -76,7 +75,7 @@ const workoutScreen = () => {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, alignItems: "center", backgroundColor: "#1a021d" }}
+      style={{ flex: 1, alignItems: "center", backgroundColor: "#533831" }}
     >
       <Spacer h={40} />
       <Text style={commonStyles.fonts}>{workoutName}</Text>

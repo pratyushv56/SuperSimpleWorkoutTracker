@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#1a021d",
+    backgroundColor: "#533831",
     fontColor: "white",
   },
 
