@@ -76,7 +76,7 @@ export default function Progress() {
           <FlatList
             style={{
               borderRadius: 10,
-              backgroundColor: "#F5C89F",
+              backgroundColor: "grey",
               height: 300,
               borderRadius: 10,
             }}
@@ -89,7 +89,7 @@ export default function Progress() {
             renderItem={({ item }) => (
               <View
                 style={{
-                  backgroundColor: "#D3A274",
+                  backgroundColor: "#3c7050",
                   padding: 10,
                   borderRadius: 10,
                 }}
@@ -111,9 +111,9 @@ export default function Progress() {
                           flexDirection: "row",
                         }}
                       >
-                        <Text style={{ color: "green" }}>{setItem[0]}</Text>
-                        <Text style={{ color: "white" }}> x </Text>
-                        <Text style={{ color: "green" }}> {setItem[1]}</Text>
+                        <Text style={{ color: "white" }}>{setItem[0]}</Text>
+                        <Text style={{ color: "black" }}> x </Text>
+                        <Text style={{ color: "white" }}>{setItem[1]}</Text>
                       </View>
                     )}
                   />

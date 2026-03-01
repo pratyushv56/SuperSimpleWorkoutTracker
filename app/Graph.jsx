@@ -2,7 +2,8 @@ import { BlurView } from "expo-blur";
 import { useContext, useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { VictoryArea, VictoryAxis, VictoryChart } from "victory-native";
+import { Area, CartesianChart } from "victory-native";
+import Spacer from "../components/Spacer";
 import { WorkoutContext } from "./WorkoutProvider";
 export default function Graph() {
   const [selectedWorkout, setSelectedWorkout] = useState("");
@@ -28,7 +29,7 @@ export default function Graph() {
   console.log(workoutList);
 
   useEffect(() => {
-    if (workoutList.length > 0) {
+    if (workoutList.length > 0 && selectedWorkout == "") {
       setSelectedWorkout(workoutList[0]);
     }
   }, [workoutList]);
@@ -79,31 +80,26 @@ export default function Graph() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#533831",
+        backgroundColor: "black",
         justifyContent: "center",
         padding: 20,
       }}
     >
-      <View style={{ height: 300 }}>
+      <View style={{ height: 300, backgroundColor: "grey" }}>
         {selectedGraphData.length > 0 && (
-          <VictoryChart scale={{ x: "time" }} domainPadding={{ x: 20, y: 20 }}>
-            <VictoryAxis fixLabelOverlap />
-            <VictoryAxis dependentAxis />
-            <VictoryArea
-              data={selectedGraphData}
-              interpolation="monotoneX"
-              style={{
-                data: {
-                  fill: "rgba(238, 167, 39, 0.3)",
-                  stroke: "#EEA727",
-                  strokeWidth: 2,
-                },
-              }}
-            />
-          </VictoryChart>
+          <CartesianChart
+            data={selectedGraphData}
+            xKey="x"
+            yKeys={["y"]}
+            domainPadding={{ left: 20, right: 20, top: 20, bottom: 20 }}
+          >
+            {({ points, chartBounds }) => (
+              <Area points={points.y} y0={chartBounds.bottom} color="#3c7050" />
+            )}
+          </CartesianChart>
         )}
       </View>
-
+      <Spacer h={10} />
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Pressable
           onPress={changeRange}

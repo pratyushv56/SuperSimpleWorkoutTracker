@@ -74,9 +74,7 @@ const workoutScreen = () => {
   }, [workoutName]);
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, alignItems: "center", backgroundColor: "#533831" }}
-    >
+    <SafeAreaView style={{ flex: 1, alignItems: "center" }}>
       <Spacer h={40} />
       <Text style={commonStyles.fonts}>{workoutName}</Text>
       <Spacer h={40} />
