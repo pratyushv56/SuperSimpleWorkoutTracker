@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Alert,
   FlatList,
   Pressable,
   StyleSheet,
@@ -19,6 +20,10 @@ const workoutSelection = () => {
   const [showPopUp, setShowPopUp] = useState(false);
   const [showDeletePopUp, setShowDeletePopUp] = useState(false);
 
+  const [allWorkouts, setAllWorkouts] = useState([]);
+
+  const [suggestions, setSuggestions] = useState([]);
+
   const flipDeletePopUpFlag = () => {
     setShowDeletePopUp(!showDeletePopUp);
   };
@@ -30,6 +35,20 @@ const workoutSelection = () => {
       setShowPopUp(true);
     }
   };
+
+  function getSuggestions(prefix) {
+    if (!prefix.trim()) {
+      setSuggestions([]); //if user types something then backspaces it till nothing left...need to update suggestions to nothing
+      return;
+    }
+    let list = [];
+    for (const w of allWorkouts) {
+      if (w.toLowerCase().startsWith(prefix.toLowerCase())) {
+        list.push(w);
+      }
+    }
+    setSuggestions(list);
+  }
 
   function deleteItem(name) {
     const modifiedArray = sessionWorkouts.filter((item) => item !== name);
@@ -71,6 +90,9 @@ const workoutSelection = () => {
     const loadWorkouts = async () => {
       const array = await getWorkouts(sessionName);
       setSessionWorkouts(array);
+
+      const allWorkoutsArray = await AsyncStorage.getItem("allWorkouts");
+      setAllWorkouts(allWorkoutsArray ? JSON.parse(allWorkoutsArray) : []);
     };
     loadWorkouts();
   }, [sessionName]);
@@ -84,11 +106,34 @@ const workoutSelection = () => {
     });
   };
 
-  const addName = () => {
-    const updatedArray = [...sessionWorkouts, enteredName];
+  const addName = async () => {
+    const trimmed = enteredName.trim();
+    if (
+      sessionWorkouts.some(
+        (item) => item.toLowerCase() === trimmed.toLowerCase(),
+      )
+    ) {
+      Alert.alert("Workout Already Exists");
+      return;
+    }
+    if (!enteredName.trim()) {
+      setShowPopUp(false);
+      return;
+    }
+    const updatedArray = [...sessionWorkouts, trimmed];
 
     setSessionWorkouts(updatedArray);
-    setWorkouts(updatedArray, sessionName);
+    await setWorkouts(updatedArray, sessionName);
+
+    const updatedAll = allWorkouts.some(
+      (w) => w.toLowerCase() === trimmed.toLowerCase(),
+    )
+      ? allWorkouts
+      : [...allWorkouts, trimmed];
+
+    setAllWorkouts(updatedAll);
+    await AsyncStorage.setItem("allWorkouts", JSON.stringify(updatedAll));
+
     flipPopUpFlag();
   };
 
@@ -197,18 +242,81 @@ const workoutSelection = () => {
             backgroundColor: "rgba(0, 0, 0, 0.6)",
           }}
         >
-          <View>
+          <Pressable
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: "rgba(0,0,0,0.6)",
+            }}
+            onPress={() => setShowPopUp(false)}
+          />
+          <View
+            style={{
+              padding: 10,
+              width: "60%",
+              backgroundColor: "#444449",
+              borderRadius: 5,
+            }}
+          >
             <TextInput
-              style={{ backgroundColor: "black" }}
+              style={{
+                borderRadius: 5,
+                backgroundColor: "gray",
+              }}
               placeholder="Name"
               value={enteredName}
-              onChangeText={setenteredName}
+              onChangeText={(text) => {
+                getSuggestions(text);
+                setenteredName(text);
+              }}
             ></TextInput>
-            <Pressable onPress={addName}>
-              <Text style={{ color: "white" }}>Add</Text>
+            <Spacer h={10} />
+            <Pressable
+              onPress={addName}
+              style={{ backgroundColor: "orange", borderRadius: 5 }}
+            >
+              <Text style={{ color: "black", padding: 5 }}>Add</Text>
             </Pressable>
+            <Spacer h={2} />
+            <View>
+              <FlatList
+                style={{ maxHeight: 100 }}
+                keyExtractor={(item) => item}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={{}}
+                data={suggestions}
+                renderItem={({ item }) => (
+                  <View style={{ padding: 5 }}>
+                    <Pressable
+                      style={({ pressed }) => [
+                        {
+                          borderRadius: 5,
+                          backgroundColor: pressed ? "#3a2a00" : "#2c2c31",
+                          opacity: pressed ? 0.85 : 1,
+                          borderLeftColor: "#EEA727",
+                          elevation: pressed ? 10 : 4,
+                        },
+                      ]}
+                      onPress={() => {
+                        setenteredName(item);
+
+                        setSuggestions([]);
+                      }}
+                    >
+                      <Text
+                        style={{ color: "white", fontSize: 14, padding: 4 }}
+                      >
+                        {item}
+                      </Text>
+                    </Pressable>
+                  </View>
+                )}
+              />
+            </View>
           </View>
-          <Text style={{ color: "white" }}>Popup Wow</Text>
         </SafeAreaView>
       )}
     </SafeAreaView>

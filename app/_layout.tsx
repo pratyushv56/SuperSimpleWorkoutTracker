@@ -17,53 +17,70 @@ export default function RootLayout() {
     Inter_600SemiBold,
   });
 
+  const pushArray = [
+    "Barbell Bench Press",
+    "Incline Dumbbell Press",
+    "Overhead Press",
+    "Lateral Raise",
+    "Triceps Pushdown",
+  ];
+
+  const pullArray = [
+    "Pull-Ups",
+    "Lat Pulldown",
+    "Barbell Row",
+    "Seated Cable Row",
+    "Barbell Curl",
+  ];
+
+  const legsArray = [
+    "Barbell Squat",
+    "Leg Press",
+    "Romanian Deadlift",
+    "Leg Curl",
+    "Standing Calf Raise",
+  ];
+
+  const upperArray = [
+    "Barbell Bench Press",
+    "Pull-Ups",
+    "Barbell Row",
+    "Overhead Press",
+    "Barbell Curl",
+  ];
+
+  const lowerArray = [
+    "Barbell Squat",
+    "Romanian Deadlift",
+    "Leg Press",
+    "Leg Curl",
+    "Standing Calf Raise",
+  ];
+
+  const sessionsArray = ["Push", "Pull", "Legs", "Upper", "Lower"];
+
   useEffect(() => {
     const initialize = async () => {
+      const allWorkouts = await AsyncStorage.getItem("allWorkouts");
+
       const initFlag = await AsyncStorage.getItem("appInitialized");
-      if (initFlag) {
-        return;
-      } else {
-        const pushArray = [
-          "Barbell Bench Press",
-          "Incline Dumbbell Press",
-          "Overhead Press",
-          "Lateral Raise",
-          "Triceps Pushdown",
-        ];
-
-        const pullArray = [
-          "Pull-Ups",
-          "Lat Pulldown",
-          "Barbell Row",
-          "Seated Cable Row",
-          "Barbell Curl",
-        ];
-
-        const legsArray = [
-          "Barbell Squat",
-          "Leg Press",
-          "Romanian Deadlift",
-          "Leg Curl",
-          "Standing Calf Raise",
-        ];
-
-        const upperArray = [
-          "Barbell Bench Press",
-          "Pull-Ups",
-          "Barbell Row",
-          "Overhead Press",
-          "Barbell Curl",
-        ];
-
-        const lowerArray = [
-          "Barbell Squat",
-          "Romanian Deadlift",
-          "Leg Press",
-          "Leg Curl",
-          "Standing Calf Raise",
+      if (!initFlag) {
+        const workoutsUnion = [
+          ...new Set([
+            ...pushArray,
+            ...pullArray,
+            ...legsArray,
+            ...lowerArray,
+            ...upperArray,
+          ]),
         ];
 
         const sessionsArray = ["Push", "Pull", "Legs", "Upper", "Lower"];
+
+        await AsyncStorage.setItem(
+          "allWorkouts",
+          JSON.stringify(workoutsUnion),
+        );
 
         await AsyncStorage.setItem("sessions", JSON.stringify(sessionsArray));
 
@@ -74,6 +91,22 @@ export default function RootLayout() {
         await AsyncStorage.setItem("workout-Lower", JSON.stringify(lowerArray));
 
         await AsyncStorage.setItem("appInitialized", "true");
+      }
+
+      if (!allWorkouts) {
+        const workoutsUnion = [
+          ...new Set([
+            ...pushArray,
+            ...pullArray,
+            ...legsArray,
+            ...lowerArray,
+            ...upperArray,
+          ]),
+        ];
+        await AsyncStorage.setItem(
+          "allWorkouts",
+          JSON.stringify(workoutsUnion),
+        );
       }
     };
 

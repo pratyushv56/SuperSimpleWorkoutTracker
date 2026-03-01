@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
@@ -57,7 +58,7 @@ export default function Progress() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ alignItems: "center" }}>
+      <View style={{ alignItems: "center", justifyContent: "space-around" }}>
         <Text
           style={{
             fontFamily: "Inter_600SemiBold",
@@ -69,15 +70,17 @@ export default function Progress() {
         </Text>
 
         <Spacer h={20} />
-        <Text style={{ color: "white" }}>{selectedDate}</Text>
+        <Text style={{ color: "white", fontWeight: "bold", fontSize: 17 }}>
+          {selectedDate}
+        </Text>
 
         <Spacer h={10} />
-        <View style={{ height: "70%", width: "70%" }}>
+        <View style={{ height: "73%", width: "70%" }}>
           <FlatList
             style={{
               borderRadius: 10,
-              backgroundColor: "grey",
-              height: 300,
+              backgroundColor: "#24252B",
+              flex: 1,
               borderRadius: 10,
             }}
             contentContainerStyle={{
@@ -89,7 +92,9 @@ export default function Progress() {
             renderItem={({ item }) => (
               <View
                 style={{
-                  backgroundColor: "#3c7050",
+                  backgroundColor: "#1C1C22",
+                  borderColor: "#2A2C34",
+                  borderWidth: 1,
                   padding: 10,
                   borderRadius: 10,
                 }}
@@ -112,7 +117,7 @@ export default function Progress() {
                         }}
                       >
                         <Text style={{ color: "white" }}>{setItem[0]}</Text>
-                        <Text style={{ color: "black" }}> x </Text>
+                        <Text style={{ color: "#A1A1AA" }}> x </Text>
                         <Text style={{ color: "white" }}>{setItem[1]}</Text>
                       </View>
                     )}
@@ -126,14 +131,18 @@ export default function Progress() {
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Pressable onPress={changeDatePrev}>
-              <Entypo name="arrow-with-circle-left" size={30} color="white" />
+              <Entypo name="arrow-with-circle-left" size={30} color="#A1A1AA" />
             </Pressable>
             <Pressable onPress={calendarFlip}>
-              <Entypo name="calendar" size={30} color="white" />
+              <Entypo name="calendar" size={30} color="#D1D5DB" />
             </Pressable>
 
             <Pressable onPress={changeDateNext}>
-              <Entypo name="arrow-with-circle-right" size={30} color="white" />
+              <Entypo
+                name="arrow-with-circle-right"
+                size={30}
+                color="#A1A1AA"
+              />
             </Pressable>
           </View>
           <Spacer h={40} />
@@ -145,14 +154,20 @@ export default function Progress() {
                 router.push("/Graph");
               }}
             >
-              <Text style={{ color: "white" }}>GraphView</Text>
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <Ionicons name="analytics" size={40} color="#EEA727" />
+                <Text style={{ color: "white" }}>Graph View</Text>
+              </View>
             </Pressable>
             <Pressable
               onPress={() => {
                 router.push("/PRPage");
               }}
             >
-              <Text style={{ color: "white" }}>PR</Text>
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <Ionicons name="medal-outline" size={40} color="#EEA727" />
+                <Text style={{ color: "white" }}>PR</Text>
+              </View>
             </Pressable>
           </View>
         </View>

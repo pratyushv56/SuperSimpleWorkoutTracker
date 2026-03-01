@@ -80,17 +80,17 @@ export default function Graph() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "black",
+        backgroundColor: "#0F0F12",
         justifyContent: "center",
         padding: 20,
       }}
     >
-      <Text style={{ fontSize: 20, color: "white", alignSelf: "center" }}>
+      <Text style={{ fontSize: 24, color: "#D1D5DB", alignSelf: "center" }}>
         {selectedWorkout}
       </Text>
-      <Spacer h={10} />
+      <Spacer h={20} />
 
-      <View style={{ height: 300, backgroundColor: "grey" }}>
+      <View style={{ height: 300, backgroundColor: "#1C1C22" }}>
         {selectedGraphData.length > 0 && (
           <CartesianChart
             data={selectedGraphData}
@@ -99,26 +99,30 @@ export default function Graph() {
             domainPadding={{ left: 20, right: 20, top: 20, bottom: 20 }}
           >
             {({ points, chartBounds }) => (
-              <Area points={points.y} y0={chartBounds.bottom} color="#3c7050" />
+              <Area
+                points={points.y}
+                y0={chartBounds.bottom}
+                color="rgba(238,167,39,0.6)"
+              ></Area>
             )}
           </CartesianChart>
         )}
       </View>
       <Spacer h={10} />
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Pressable
-          onPress={changeRange}
-          style={{ backgroundColor: "orange", borderRadius: 5, padding: 5 }}
-        >
-          <Text>Change Range</Text>
-        </Pressable>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Pressable
           onPress={() => {
             setShowWorkoutScreen(true);
           }}
-          style={{ backgroundColor: "orange", borderRadius: 5, padding: 5 }}
+          style={{ backgroundColor: "#444449", borderRadius: 5, padding: 10 }}
         >
-          <Text>Change Workout</Text>
+          <Text style={{ color: "#D1D5DB", fontSize: 16 }}>Change Workout</Text>
         </Pressable>
       </View>
 

@@ -14,6 +14,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Alert } from "react-native";
 const Week = () => {
   const [workouts, setWorkouts] = useState([]);
   const [enteredName, setEnteredName] = useState("");
@@ -54,6 +55,18 @@ const Week = () => {
   const router = useRouter();
 
   const addName = () => {
+    if (
+      sessionWorkouts.some(
+        (item) => item.toLowerCase() === enteredName.toLowerCase(),
+      )
+    ) {
+      Alert.alert("Workout Already Exists");
+      return;
+    }
+    if (!enteredName.trim()) {
+      setShowPopUp(false);
+      return;
+    }
     const updatedArray = [...workouts, enteredName];
     setWorkouts(updatedArray);
     setWorkoutsStorage(updatedArray);
@@ -135,6 +148,17 @@ const Week = () => {
             backgroundColor: "rgba(0, 0, 0, 0.6)",
           }}
         >
+          <Pressable
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: "rgba(0,0,0,0.6)",
+            }}
+            onPress={() => setShowDeletePopUp(false)}
+          />
           <View
             style={{
               width: "80%",
@@ -184,18 +208,42 @@ const Week = () => {
             backgroundColor: "rgba(0, 0, 0, 0.6)",
           }}
         >
-          <View>
+          <Pressable
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: "rgba(0,0,0,0.6)",
+            }}
+            onPress={() => setShowPopUp(false)}
+          />
+          <View
+            style={{
+              padding: 10,
+              width: "60%",
+              backgroundColor: "#444449",
+              borderRadius: 5,
+            }}
+          >
             <TextInput
-              style={{ borderRadius: 5, backgroundColor: "gray" }}
+              style={{
+                borderRadius: 5,
+                backgroundColor: "gray",
+              }}
               placeholder="Name"
               value={enteredName}
               onChangeText={setEnteredName}
             ></TextInput>
-            <Pressable onPress={addName}>
-              <Text style={{ color: "white" }}>Add</Text>
+            <Spacer h={10} />
+            <Pressable
+              onPress={addName}
+              style={{ backgroundColor: "orange", borderRadius: 5 }}
+            >
+              <Text style={{ color: "black", padding: 5 }}>Add</Text>
             </Pressable>
           </View>
-          <Text style={{ color: "white" }}>Popup Wow</Text>
         </SafeAreaView>
       )}
     </SafeAreaView>

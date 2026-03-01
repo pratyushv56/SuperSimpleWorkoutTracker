@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,6 +19,10 @@ const workoutScreen = () => {
   const [enteredReps, setenteredReps] = useState("");
 
   const [prObject, setprObject] = useState(null);
+
+  const [showPR, setShowPR] = useState(false);
+
+  const [animationFlag, setAnimationFlag] = useState(false);
 
   const logSet = async () => {
     if (!enteredWeight || !enteredReps) return; //empty entries not allowed
@@ -41,7 +46,16 @@ const workoutScreen = () => {
     setenteredReps("");
 
     const pr = await getPR();
-    setprObject(pr);
+
+    if (
+      !prObject || //i.e when prObject is null(no logs for this workout)--this condition should also trigger animation
+      pr.weightPR.prWeight > prObject?.weightPR?.prWeight ||
+      pr.volumePR.prVolume > prObject?.volumePR?.prVolume //if new pr calculation greater than before trigger animationt
+    ) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setAnimationFlag(true);
+    }
+    setprObject(pr); //update prObject state
   };
 
   const deleteSet = async (indexToDelete) => {
@@ -104,7 +118,8 @@ const workoutScreen = () => {
     let prWeightDate;
     let prVolumeDate;
     let prVolumeWeight = 0;
-    let prReps = 0;
+    let prWeightReps = 0;
+    let prVolumeReps = 0;
     for (let d in stored[w]) {
       const dateSets = stored[w][d];
 
@@ -116,18 +131,19 @@ const workoutScreen = () => {
         if (prWeight < weight) {
           prWeight = weight;
           prWeightDate = d;
+          prWeightReps = reps;
         }
         if (prVolume < volume) {
           prVolumeWeight = weight;
-          prReps = reps;
+          prVolumeReps = reps;
           prVolume = volume;
           prVolumeDate = d;
         }
       }
     }
     return {
-      volumePR: { prVolumeDate, prVolume, prReps, prVolumeWeight },
-      weightPR: { prWeightDate, prWeight },
+      volumePR: { prVolumeDate, prVolume, prVolumeReps, prVolumeWeight },
+      weightPR: { prWeightDate, prWeight, prWeightReps },
     };
   }
 
@@ -135,6 +151,27 @@ const workoutScreen = () => {
     <SafeAreaView style={{ flex: 1, alignItems: "center" }}>
       <Spacer h={40} />
       <Text style={commonStyles.fonts}>{workoutName}</Text>
+      <View
+        style={{
+          width: "95%",
+
+          justifyContent: "space-evenly",
+          alignItems: "flex-end",
+          gap: 10,
+        }}
+      >
+        <Pressable
+          style={{
+            backgroundColor: "red",
+            borderRadius: 20,
+          }}
+          onPress={() => {
+            setShowPR(!showPR);
+          }}
+        >
+          <Text style={{ padding: 10, color: "white" }}>PR</Text>
+        </Pressable>
+      </View>
       <Spacer h={40} />
       <View
         style={{
@@ -182,11 +219,7 @@ const workoutScreen = () => {
         <Text style={{ color: "black" }}>Add Set</Text>
       </Pressable>
 
-      <Spacer h={10} />
-      <Text style={{ color: "white" }}>PR : {JSON.stringify(prObject)}</Text>
-
       <Spacer h={50} />
-      <Text>Log</Text>
 
       <Spacer h={15} />
       <View
@@ -241,6 +274,45 @@ const workoutScreen = () => {
       <View>
         <Text>end</Text>
       </View>
+
+      {showPR && prObject && (
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: "white", fontSize: 30 }}>
+            PR Weight: {prObject.weightPR.prWeight} x
+            {prObject.weightPR.prWeightReps}
+          </Text>
+          <Text style={{ color: "#aaa" }}>
+            On {prObject.weightPR.prWeightDate}
+          </Text>
+          <Spacer h={10} />
+          <Text style={{ color: "white", fontSize: 30 }}>
+            PR Set: {prObject.volumePR.prVolumeWeight} x{" "}
+            {prObject.volumePR.prVolumeReps}
+          </Text>
+          <Text style={{ color: "#aaa" }}>
+            On {prObject.volumePR.prVolumeDate}
+          </Text>
+        </View>
+      )}
+
+      {animationFlag && (
+        <>
+          <LottieView
+            source={require("../assets/confetti.json")}
+            autoPlay
+            loop={false}
+            style={{
+              flex: 1,
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+            onAnimationFinish={() => setAnimationFlag(false)}
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 };
