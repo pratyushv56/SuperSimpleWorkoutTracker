@@ -17,7 +17,10 @@ const workoutScreen = () => {
   const [enteredWeight, setenteredWeight] = useState("");
   const [enteredReps, setenteredReps] = useState("");
 
+  const [prObject, setprObject] = useState(null);
+
   const logSet = async () => {
+    if (!enteredWeight || !enteredReps) return; //empty entries not allowed
     const storedSet = await AsyncStorage.getItem("workoutLogsMaster");
     const storedSetParsed = storedSet ? JSON.parse(storedSet) : {};
     storedSetParsed[workoutName] = storedSetParsed[workoutName]
@@ -36,6 +39,9 @@ const workoutScreen = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setenteredWeight("");
     setenteredReps("");
+
+    const pr = await getPR();
+    setprObject(pr);
   };
 
   const deleteSet = async (indexToDelete) => {
@@ -56,6 +62,9 @@ const workoutScreen = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     setLog((prev) => prev.filter((_, index) => index !== indexToDelete));
+
+    const pr = await getPR();
+    setprObject(pr);
   };
 
   useEffect(() => {
@@ -68,10 +77,59 @@ const workoutScreen = () => {
       const todaySets = exerciseLogs[workoutName]?.[today] || [];
 
       setLog(todaySets);
+
+      const pr = await getPR(); //loads pr from the getPR function
+      setprObject(pr);
     };
 
     loadTodaySets();
   }, [workoutName]);
+
+  async function getPR() {
+    let stored = await AsyncStorage.getItem("workoutLogsMaster");
+
+    if (!stored) {
+      return null;
+    }
+
+    stored = JSON.parse(stored);
+
+    const w = workoutName;
+
+    if (!stored[w]) {
+      return null;
+    }
+    let prVolume = 0;
+    let prWeight = 0;
+    let prWeightDate;
+    let prVolumeDate;
+    let prVolumeWeight = 0;
+    let prReps = 0;
+    for (let d in stored[w]) {
+      const dateSets = stored[w][d];
+
+      for (const s of dateSets) {
+        const weight = Number(s[0]);
+        const reps = Number(s[1]);
+        const volume = weight * reps;
+
+        if (prWeight < weight) {
+          prWeight = weight;
+          prWeightDate = d;
+        }
+        if (prVolume < volume) {
+          prVolumeWeight = weight;
+          prReps = reps;
+          prVolume = volume;
+          prVolumeDate = d;
+        }
+      }
+    }
+    return {
+      volumePR: { prVolumeDate, prVolume, prReps, prVolumeWeight },
+      weightPR: { prWeightDate, prWeight },
+    };
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: "center" }}>
@@ -124,8 +182,12 @@ const workoutScreen = () => {
         <Text style={{ color: "black" }}>Add Set</Text>
       </Pressable>
 
+      <Spacer h={10} />
+      <Text style={{ color: "white" }}>PR : {JSON.stringify(prObject)}</Text>
+
       <Spacer h={50} />
       <Text>Log</Text>
+
       <Spacer h={15} />
       <View
         style={{

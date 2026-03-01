@@ -85,6 +85,11 @@ export default function Graph() {
         padding: 20,
       }}
     >
+      <Text style={{ fontSize: 20, color: "white", alignSelf: "center" }}>
+        {selectedWorkout}
+      </Text>
+      <Spacer h={10} />
+
       <View style={{ height: 300, backgroundColor: "grey" }}>
         {selectedGraphData.length > 0 && (
           <CartesianChart

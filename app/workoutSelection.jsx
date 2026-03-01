@@ -1,3 +1,4 @@
+import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -16,6 +17,11 @@ const workoutSelection = () => {
   const { sessionName } = useLocalSearchParams();
 
   const [showPopUp, setShowPopUp] = useState(false);
+  const [showDeletePopUp, setShowDeletePopUp] = useState(false);
+
+  const flipDeletePopUpFlag = () => {
+    setShowDeletePopUp(!showDeletePopUp);
+  };
 
   const flipPopUpFlag = () => {
     if (showPopUp) {
@@ -24,6 +30,13 @@ const workoutSelection = () => {
       setShowPopUp(true);
     }
   };
+
+  function deleteItem(name) {
+    const modifiedArray = sessionWorkouts.filter((item) => item !== name);
+
+    setSessionWorkouts(modifiedArray);
+    setWorkouts(modifiedArray, sessionName);
+  }
 
   const [enteredName, setenteredName] = useState("");
 
@@ -100,7 +113,7 @@ const workoutSelection = () => {
             }}
             onPress={() => chooseWorkout(item)}
           >
-            <Text>{item}</Text>
+            <Text style={{ fontWeight: "bold" }}>{item}</Text>
           </Pressable>
         )}
       />
@@ -112,6 +125,64 @@ const workoutSelection = () => {
         <Text style={{ fontSize: 20, color: "white" }}>Add Workout</Text>
       </Pressable>
       <Spacer h={20} />
+
+      <Pressable
+        style={{ borderRadius: 10, padding: 4, backgroundColor: "#771840" }}
+        onPress={flipDeletePopUpFlag}
+      >
+        <Text style={{ fontSize: 20, color: "white" }}>Delete Workout</Text>
+      </Pressable>
+      <Spacer h={20} />
+
+      {showDeletePopUp && (
+        <SafeAreaView
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+          }}
+        >
+          <View
+            style={{
+              width: "80%",
+              backgroundColor: "black",
+              padding: 20,
+              borderRadius: 12,
+            }}
+          >
+            <FlatList
+              data={sessionWorkouts}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: 12,
+                    marginVertical: 6,
+                    borderRadius: 10,
+                    backgroundColor: "#EEA727",
+                  }}
+                  onPress={() => {
+                    deleteItem(item);
+                    setShowDeletePopUp(false);
+                  }}
+                >
+                  <Text style={{ color: "black" }}>{item}</Text>
+
+                  <AntDesign name="delete" size={20} color="red" />
+                </Pressable>
+              )}
+            />
+          </View>
+        </SafeAreaView>
+      )}
 
       {showPopUp && (
         <SafeAreaView

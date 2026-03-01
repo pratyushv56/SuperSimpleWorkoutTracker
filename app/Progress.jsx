@@ -149,7 +149,7 @@ export default function Progress() {
             </Pressable>
             <Pressable
               onPress={() => {
-                router.push("/prPage");
+                router.push("/PRPage");
               }}
             >
               <Text style={{ color: "white" }}>PR</Text>
