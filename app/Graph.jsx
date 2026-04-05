@@ -34,7 +34,7 @@ export default function Graph() {
     }
   }, [workoutList]);
 
-  function changeRange() {}
+  function changeRange() { }
   //extracting graph points
 
   function extractGraphData() {
