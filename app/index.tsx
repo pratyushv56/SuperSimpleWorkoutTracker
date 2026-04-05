@@ -1,12 +1,33 @@
 import { Link } from "expo-router";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Logo from "../assets/Homepage.png";
 import Progress from "../assets/Progress.png";
 import Spacer from "../components/Spacer";
 
 export default function Index() {
+  async function handleLogin() {}
+
   return (
-    <View style={pageStyle.page}>
+    <SafeAreaView style={pageStyle.page}>
+      <Pressable
+        style={{
+          position: "absolute",
+          top: 20,
+          alignSelf: "flex-end",
+
+          marginRight: 20,
+          marginTop: 20,
+          backgroundColor: "#F7A737",
+          padding: 5,
+          borderRadius: 10,
+        }}
+        onPress={async () => {
+          await handleLogin();
+        }}
+      >
+        <Text style={{ color: "white" }}>Login</Text>
+      </Pressable>
       <Image
         source={Logo}
         style={{
@@ -29,7 +50,7 @@ export default function Index() {
           <Image source={Progress} style={{ width: 30, height: 30 }} />
         </Text>
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }
 
