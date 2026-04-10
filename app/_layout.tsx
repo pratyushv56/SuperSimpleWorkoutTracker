@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import WorkoutContext from "./WorkoutProvider";
+import { AuthContext } from "./authContext";
+import { listenToAuth } from "./authService";
 
 import {
   Inter_400Regular,
@@ -113,15 +115,30 @@ export default function RootLayout() {
     initialize();
   }, []);
 
+  const [user, setUser] = useState(undefined);
+  useEffect(() => {
+    const unsubscribe = listenToAuth((user) => {
+      setUser(user);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  if (!fontsLoaded) {
+    return null; // or a loading spinner
+  }
+
   return (
-    <WorkoutContext>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: "black" },
-          animation: "ios_from_right",
-        }}
-      />
-    </WorkoutContext>
+    <AuthContext.Provider value={{ user, uid: user?.uid }}>
+      <WorkoutContext>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: "black" },
+            animation: "ios_from_right",
+          }}
+        />
+      </WorkoutContext>
+    </AuthContext.Provider>
   );
 }

@@ -1,33 +1,39 @@
 import { Link } from "expo-router";
-import { Image, Pressable, StyleSheet, Text } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Logo from "../assets/Homepage.png";
 import Progress from "../assets/Progress.png";
 import Spacer from "../components/Spacer";
+import { useAuth } from "./authContext";
 
 export default function Index() {
-  async function handleLogin() {}
+  const { user, uid } = useAuth();
+
+  const signedIn = !!user; // Convert user to a boolean (true if user exists, false if null or undefined)
+
+  console.log("User in Index:", user);
+  console.log("UID in Index on home page:", uid);
 
   return (
     <SafeAreaView style={pageStyle.page}>
-      <Pressable
-        style={{
-          position: "absolute",
-          top: 20,
-          alignSelf: "flex-end",
+      {!signedIn && (
+        <View
+          style={{
+            position: "absolute",
+            top: 25,
+            right: 15,
+            padding: 6,
 
-          marginRight: 20,
-          marginTop: 20,
-          backgroundColor: "#F7A737",
-          padding: 5,
-          borderRadius: 10,
-        }}
-        onPress={async () => {
-          await handleLogin();
-        }}
-      >
-        <Text style={{ color: "white" }}>Login</Text>
-      </Pressable>
+            paddingInline: 12,
+            backgroundColor: "#7DA293",
+            borderRadius: 10,
+          }}
+        >
+          <Link href="/Auth">
+            <Text style={{ color: "white" }}>Login</Text>
+          </Link>
+        </View>
+      )}
       <Image
         source={Logo}
         style={{
