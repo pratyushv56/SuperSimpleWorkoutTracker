@@ -16,8 +16,8 @@ export default function Terms() {
 
         <Text style={{ marginTop: 15, color: "white" }}>
           This app allows you to log workouts and optionally back up your data
-          to the cloud using your account. The app is provided "as is" without
-          any guarantees of accuracy, reliability, or availability.
+          to the cloud using your account. The app is provided without any
+          guarantees of accuracy, reliability, or availability.
         </Text>
 
         <Text style={{ marginTop: 15, color: "white" }}>

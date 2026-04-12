@@ -29,7 +29,7 @@ export default function Graph() {
   console.log(workoutList);
 
   useEffect(() => {
-    if (workoutList.length > 0 && selectedWorkout == "") {
+    if (workoutList.length > 0 && selectedWorkout === "") {
       setSelectedWorkout(workoutList[0]);
     }
   }, [workoutList]);
@@ -125,9 +125,6 @@ export default function Graph() {
           <Text style={{ color: "#D1D5DB", fontSize: 16 }}>Change Workout</Text>
         </Pressable>
       </View>
-
-      <Text>{selectedWorkout}</Text>
-      <Text>{JSON.stringify(selectedGraphData)}</Text>
 
       {showWorkoutScreen && (
         <>
