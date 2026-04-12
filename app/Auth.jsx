@@ -6,18 +6,25 @@ import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { auth } from "./firebase";
 
-import { useRouter } from "expo-router";
+import Checkbox from "expo-checkbox";
+import { Link, useRouter } from "expo-router";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { Alert, StyleSheet, TextInput } from "react-native";
 import Spacer from "../components/Spacer";
+import { loadFromCloud } from "./syncService";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const [agreed, setAgreed] = useState(false);
 
   const signIn = async (email, password) => {
+    if (!agreed) {
+      Alert.alert("Please accept the Terms and Conditions");
+      return;
+    }
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -27,6 +34,9 @@ export default function Auth() {
 
       const user = userCredential.user;
       console.log("User signed in:", user);
+
+      await loadFromCloud(user.uid);
+
       router.replace("/");
     } catch (error) {
       console.error("Error signing in:", error);
@@ -35,6 +45,10 @@ export default function Auth() {
   };
 
   const signUp = async (email, password) => {
+    if (!agreed) {
+      Alert.alert("Please accept the Terms and Conditions");
+      return;
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -72,6 +86,12 @@ export default function Auth() {
 
   return (
     <SafeAreaView style={pageStyle.page}>
+      <View style={{ width: "70%" }}>
+        <Text style={{ color: "grey" }}>
+          Create an account to backup progress and sync across devices.
+        </Text>
+      </View>
+      <Spacer h={20} />
       <View style={{ width: "75%", maxWidth: 400 }}>
         <TextInput
           placeholder="Email"
@@ -96,7 +116,21 @@ export default function Auth() {
             borderRadius: 10,
           }}
         />
-        <Spacer h={20} />
+        <Spacer h={15} />
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <Checkbox value={agreed} onValueChange={setAgreed} />
+          <Text style={{ color: "white", fontSize: 12 }}>
+            I agree to the{" "}
+            <Link href="/terms">
+              <Text style={{ color: "orange" }}>Terms & Conditions </Text>
+            </Link>
+            and{" "}
+            <Link href="/privacypolicy">
+              <Text style={{ color: "orange" }}>Privacy Policy</Text>
+            </Link>
+          </Text>
+        </View>
+        <Spacer h={15} />
         <View
           style={{
             flexDirection: "row",

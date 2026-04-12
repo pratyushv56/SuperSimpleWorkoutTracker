@@ -81,7 +81,6 @@ export default function Progress() {
               borderRadius: 10,
               backgroundColor: "#24252B",
               flex: 1,
-              borderRadius: 10,
             }}
             contentContainerStyle={{
               borderRadius: 10,

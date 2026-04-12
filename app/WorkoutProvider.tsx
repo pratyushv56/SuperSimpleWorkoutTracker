@@ -3,6 +3,7 @@ import { createContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
+
 const WorkoutContext = createContext({});
 
 function WorkoutProvider({ children }) {

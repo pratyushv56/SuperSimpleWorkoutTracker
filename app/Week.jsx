@@ -56,9 +56,7 @@ const Week = () => {
 
   const addName = () => {
     if (
-      sessionWorkouts.some(
-        (item) => item.toLowerCase() === enteredName.toLowerCase(),
-      )
+      workouts.some((item) => item.toLowerCase() === enteredName.toLowerCase())
     ) {
       Alert.alert("Workout Already Exists");
       return;
