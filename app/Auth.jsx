@@ -35,9 +35,24 @@ export default function Auth() {
       const user = userCredential.user;
       console.log("User signed in:", user);
 
-      await loadFromCloud(user.uid);
-
-      router.replace("/");
+      Alert.alert(
+        "Restore backup?",
+        "Do you want to restore your saved backup from the cloud? This will replace the data currently stored on this device.",
+        [
+          {
+            text: "Skip",
+            style: "cancel",
+            onPress: () => router.replace("/"),
+          },
+          {
+            text: "Restore",
+            onPress: async () => {
+              await loadFromCloud(user.uid);
+              router.replace("/");
+            },
+          },
+        ],
+      );
     } catch (error) {
       console.error("Error signing in:", error);
       Alert.alert(error.message);
@@ -121,11 +136,11 @@ export default function Auth() {
           <Checkbox value={agreed} onValueChange={setAgreed} />
           <Text style={{ color: "white", fontSize: 12 }}>
             I agree to the{" "}
-            <Link href="/terms">
+            <Link href="/Terms">
               <Text style={{ color: "orange" }}>Terms & Conditions </Text>
             </Link>
             and{" "}
-            <Link href="/privacypolicy">
+            <Link href="/Privacypolicy">
               <Text style={{ color: "orange" }}>Privacy Policy</Text>
             </Link>
           </Text>

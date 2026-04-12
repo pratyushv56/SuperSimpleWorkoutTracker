@@ -1,6 +1,8 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link } from "expo-router";
+import LottieView from "lottie-react-native";
+import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Logo from "../assets/Homepage.png";
@@ -12,16 +14,28 @@ import { saveToCloud } from "./syncService";
 export default function Index() {
   const { user, uid } = useAuth();
 
+  const [syncing, setSyncing] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(false);
+
   const signedIn = !!user; // Convert user to a boolean (true if user exists, false if null or undefined)
 
   console.log("User in Index:", user);
   console.log("UID in Index on home page:", uid);
+
+  const showToast = () => {
+    setSuccessMessage(true);
+
+    setTimeout(() => {
+      setSuccessMessage(false);
+    }, 2000);
+  };
 
   async function cloudSync() {
     if (!uid) {
       console.error("No UID found.");
       return;
     }
+    setSyncing(true);
 
     try {
       const workoutLogsMaster = await AsyncStorage.getItem("workoutLogsMaster");
@@ -55,9 +69,12 @@ export default function Index() {
       await saveToCloud(uid, payload);
 
       console.log("All data synced successfully!");
+
+      showToast();
     } catch (error) {
       console.error("Error syncing:", error);
     }
+    setSyncing(false);
   }
 
   return (
@@ -81,14 +98,34 @@ export default function Index() {
         </View>
       )}
 
+      {syncing && (
+        <View
+          style={{
+            position: "absolute",
+            top: 60,
+            right: 5,
+            padding: 2,
+
+            paddingInline: 12,
+          }}
+        >
+          <LottieView
+            source={require("../assets/loading.json")}
+            autoPlay
+            loop={true}
+            style={{ width: 50, height: 50 }}
+          />
+        </View>
+      )}
+
       {signedIn && (
         <View
           style={{
             position: "absolute",
             top: 25,
             right: 15,
-            padding: 6,
-            paddingInline: 12,
+            padding: 0,
+            paddingInline: 0,
             backgroundColor: "#7DA293",
             borderRadius: 10,
           }}
@@ -97,9 +134,29 @@ export default function Index() {
             onPress={() => {
               cloudSync();
             }}
+            style={({ pressed }) => ({
+              backgroundColor: pressed ? "#5f7d70" : "#7DA293",
+              padding: 5,
+              paddingInline: 10,
+              borderRadius: 10,
+            })}
           >
             <AntDesign name="cloud-sync" size={24} color="black" />
           </Pressable>
+        </View>
+      )}
+
+      {successMessage && (
+        <View
+          style={{
+            position: "absolute",
+            top: 60,
+            backgroundColor: "#333",
+            padding: 10,
+            borderRadius: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>Backup Saved</Text>
         </View>
       )}
       <Image
