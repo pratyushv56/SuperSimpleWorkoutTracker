@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "957272339715",
+    "project_id": "bufflog-6d286",
+    "storage_bucket": "bufflog-6d286.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957272339715:android:c6770b53dae622c6ff6536",
+        "android_client_info": {
+          "package_name": "com.dietcode.bufflog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "957272339715-49nu6g4271d19vbfd52jg84hm9kfjnjg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZoiwMDeDFsehquYd2srz3OGOWZv9LVsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "957272339715-49nu6g4271d19vbfd52jg84hm9kfjnjg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
